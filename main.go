@@ -26,21 +26,6 @@ func main() {
 	}
 }
 
-func AsciiArtMaker(text string, banner string) (string, []any) {
-	errs := []any{}
-	if banner == "all" {
-		AsciiArt1, err := web.AsciiArtFs(text, "standard")
-		errs = append(errs, err)
-		AsciiArt2, err := web.AsciiArtFs(text, "shadow")
-		errs = append(errs, err)
-		AsciiArt3, err := web.AsciiArtFs(text, "thinkertoy")
-		errs = append(errs, err)
-		return AsciiArt1 + AsciiArt2 + AsciiArt3, errs
-	}
-	AsciiArt, err := web.AsciiArtFs(text, banner)
-	return AsciiArt, []any{err}
-}
-
 func AppHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -68,7 +53,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data := Data{}
-	tmpl.Execute(w, data)
+	tmpl.Execute(w, data) //error handle
 }
 
 func Post(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +86,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 - Not Found (Could not find template)", 404)
 	}
 
-	// Handing template err and AsciiConverter errs	
+	// Handing template err and AsciiConverter errs
 	for i := range errs {
 		if errs[i] != nil {
 			if errs[i] == "NotFound" {
@@ -116,5 +101,20 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data.AsciiArt = template.HTML(asciiArt)
-	tmpl.Execute(w, data)
+	tmpl.Execute(w, data) ////
+}
+
+func AsciiArtMaker(text string, banner string) (string, []any) {
+	errs := []any{}
+	if banner == "all" {
+		AsciiArt1, err := web.AsciiArtFs(text, "standard")
+		errs = append(errs, err)
+		AsciiArt2, err := web.AsciiArtFs(text, "shadow")
+		errs = append(errs, err)
+		AsciiArt3, err := web.AsciiArtFs(text, "thinkertoy")
+		errs = append(errs, err)
+		return AsciiArt1 + AsciiArt2 + AsciiArt3, errs
+	}
+	AsciiArt, err := web.AsciiArtFs(text, banner)
+	return AsciiArt, []any{err}
 }
